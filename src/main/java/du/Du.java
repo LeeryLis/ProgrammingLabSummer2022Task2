@@ -18,7 +18,9 @@ public class Du {
         this.fileNames = fileNames;
     }
 
-    public void start() {
+    public String start() {
+        StringBuilder result = new StringBuilder();
+
         long totalLength = 0;
 
         for (String fileName : fileNames) {
@@ -27,8 +29,8 @@ public class Du {
             if(file.exists()) {
                 long length = file.isFile() ? file.length() : folderSize(file);
                 if (!isTotalLength) {
-                    if (isHuman) System.out.println(chooseMeasurement(length));
-                    else System.out.println(length);
+                    if (isHuman) result.append(chooseMeasurement(length)).append((!Objects.equals(fileName, fileNames.get(fileNames.size() - 1)))? "\n" : "");
+                    else result.append(length).append((!Objects.equals(fileName, fileNames.get(fileNames.size() - 1)))? "\n" : "");
                 } else {
                     totalLength += length;
                 }
@@ -37,9 +39,12 @@ public class Du {
         }
 
         if(isTotalLength) {
-            if (isHuman) System.out.println(chooseMeasurement(totalLength));
-            else System.out.println((int) totalLength);
+            if (isHuman) result.append(chooseMeasurement(totalLength));
+            else result.append((int) totalLength);
         }
+
+        System.out.println(result);
+        return result.toString();
     }
 
     private long folderSize(File dir) {

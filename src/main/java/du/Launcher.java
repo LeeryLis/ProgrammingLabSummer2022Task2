@@ -5,6 +5,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class Launcher {
         new Launcher().launch(args);
     }
 
-    private void launch(String[] args) {
+    protected int launch(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
@@ -32,9 +33,11 @@ public class Launcher {
             System.err.println(e.getMessage());
             System.err.println("java -jar du.jar [-h] [-c] [--si] file1 file2 file3...");
             parser.printUsage(System.err);
-            return;
+            return 1;
         }
         Du du = new Du(isHuman, isTotalLength, isSi, fileNames);
         du.start();
+
+        return 0;
     }
 }
