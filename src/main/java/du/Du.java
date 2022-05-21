@@ -27,7 +27,7 @@ public class Du {
         long totalLength = 0;
 
         for (String fileName : fileNames) {
-            File file = new File(isTest ? "Input/" + fileName : fileName);
+            File file = new File(fileName);
 
             if(!file.exists()) {
                 throw new IllegalArgumentException("file \"" + fileName + "\" was not found");
@@ -58,9 +58,9 @@ public class Du {
         return length;
     }
 
-    public String chooseMeasurement(long length) {
+    String chooseMeasurement(long length) {
         double finalLength = length;
-        StringBuilder result = new StringBuilder();
+        String result;
         int measureNumber = 0;
 
         int divider = 1024;
@@ -75,7 +75,9 @@ public class Du {
             }
             measureNumber++;
         }
-        result.append(String.format(Locale.ENGLISH, "%.2f", finalLength));
-        return isHuman ? result.append(" ").append(measure[measureNumber]).toString() : result.toString();
+        result = String.format(Locale.ENGLISH, "%.2f", finalLength);
+        if (isHuman)
+            return result + " " + measure[measureNumber];
+        return result;
     }
 }
