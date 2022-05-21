@@ -11,11 +11,14 @@ public class Du {
     private final boolean isSi;
     private final List<String> fileNames;
 
-    public Du(boolean isHuman, boolean isTotalLength, boolean isSi, List<String> fileNames) {
+    private final boolean isTest;
+
+    public Du(boolean isHuman, boolean isTotalLength, boolean isSi, List<String> fileNames, boolean isTest) {
         this.isHuman = isHuman;
         this.isTotalLength = isTotalLength;
         this.isSi = isSi;
         this.fileNames = fileNames;
+        this.isTest = isTest;
     }
 
     public String start() {
@@ -24,26 +27,25 @@ public class Du {
         long totalLength = 0;
 
         for (String fileName : fileNames) {
-            File file = new File("Input/" + fileName);
+            File file = new File(isTest ? "Input/" + fileName : fileName);
 
-            if(file.exists()) {
-                long length = file.isFile() ? file.length() : folderSize(file);
-                if (!isTotalLength) {
-                    if (isHuman) result.append(chooseMeasurement(length)).append((!Objects.equals(fileName, fileNames.get(fileNames.size() - 1)))? "\n" : "");
-                    else result.append(length).append((!Objects.equals(fileName, fileNames.get(fileNames.size() - 1)))? "\n" : "");
-                } else {
-                    totalLength += length;
-                }
+            if(!file.exists()) {
+                throw new IllegalArgumentException("file \"" + fileName + "\" was not found");
             }
-            else throw new IllegalArgumentException("file \"" + fileName + "\" was not found");
+            long length = file.isDirectory() ? folderSize(file) : file.length();
+            if (!isTotalLength) {
+                if (isTest) result.append(chooseMeasurement(length)).append("\n");
+                else System.out.println(chooseMeasurement(length));
+            } else {
+                totalLength += length;
+            }
         }
 
         if(isTotalLength) {
-            if (isHuman) result.append(chooseMeasurement(totalLength));
-            else result.append((int) totalLength);
+            if (isTest) result.append(chooseMeasurement(totalLength)).append("\n");
+            else System.out.println(chooseMeasurement(totalLength));
         }
 
-        System.out.println(result);
         return result.toString();
     }
 
@@ -56,8 +58,10 @@ public class Du {
         return length;
     }
 
-    private String chooseMeasurement(long length) {
+    public String chooseMeasurement(long length) {
         double finalLength = length;
+        StringBuilder result = new StringBuilder();
+        int measureNumber = 0;
 
         int divider = 1024;
         if (isSi) divider = 1000;
@@ -67,9 +71,11 @@ public class Du {
             finalLength /= divider;
             if (finalLength < 1) {
                 finalLength *= divider;
-                return new DecimalFormat("#0.00").format(finalLength) + " " + measure[i];
+                break;
             }
+            measureNumber++;
         }
-        return new DecimalFormat("#0.00").format(finalLength) + " GB";
+        result.append(new DecimalFormat("#0.00").format(finalLength));
+        return isHuman ? result.append(" ").append(measure[measureNumber]).toString() : result.toString();
     }
 }

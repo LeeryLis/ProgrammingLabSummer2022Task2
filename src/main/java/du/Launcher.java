@@ -20,23 +20,25 @@ public class Launcher {
     @Argument(metaVar = "file1 file2...", usage = "File names")
     private List<String> fileNames = new ArrayList<>();
 
+    private boolean isTest;
+
     public static void main(String[] args) {
-        new Launcher().launch(args);
+        new Launcher().launch(args, false);
     }
 
-    protected int launch(String[] args) {
+    protected int launch(String[] args, boolean isTest) {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
             if (fileNames.isEmpty())
                 throw new IllegalArgumentException("the file list is empty");
-        } catch (CmdLineException | IllegalArgumentException e) {
+        } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println("java -jar du.jar [-h] [-c] [--si] file1 file2 file3...");
             parser.printUsage(System.err);
             return 1;
         }
-        Du du = new Du(isHuman, isTotalLength, isSi, fileNames);
+        Du du = new Du(isHuman, isTotalLength, isSi, fileNames, isTest);
         du.start();
 
         return 0;
