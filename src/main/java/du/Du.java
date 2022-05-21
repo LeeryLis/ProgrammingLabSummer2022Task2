@@ -1,8 +1,8 @@
 package du;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Du {
@@ -75,7 +75,7 @@ public class Du {
             }
             measureNumber++;
         }
-        result.append(new DecimalFormat("#0.00").format(finalLength));
+        result.append(String.format(Locale.ENGLISH, "%.2f", finalLength));
         return isHuman ? result.append(" ").append(measure[measureNumber]).toString() : result.toString();
     }
 }
